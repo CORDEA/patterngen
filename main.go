@@ -9,52 +9,49 @@ import (
 
 const Row = 3
 const Column = 3
+const Length = Row * Column
 
-func horizontalChoices(c float64, v float64, withCenter bool) []float64 {
-	var result []float64
+func horizontalChoices(c float64, v int, withCenter bool, r *[Length]int) {
 	if c > 0 {
-		result = append(result, v-1)
+		(*r)[v-1] = 1
 	}
 	if withCenter {
-		result = append(result, v)
+		(*r)[v] = 1
 	}
 	if c < Column-1 {
-		result = append(result, v+1)
+		(*r)[v+1] = 1
 	}
-	return result
 }
 
-func choices(v float64) []float64 {
-	c := math.Mod(v, Column)
-	r := math.Floor(v / Column)
-	var choices []float64
+func choices(v int) [Length]int {
+	c := math.Mod(float64(v), Column)
+	r := math.Floor(float64(v) / Column)
+	var choices [Length]int
 	if r > 0 {
-		choices = append(
-			choices,
-			horizontalChoices(c, v-Column, true)...,
-		)
+		horizontalChoices(c, v-Column, true, &choices)
 	}
-	choices = append(
-		choices,
-		horizontalChoices(c, v, false)...,
-	)
+	horizontalChoices(c, v, false, &choices)
 	if r < Row-1 {
-		choices = append(
-			choices,
-			horizontalChoices(c, v+Column, true)...,
-		)
+		horizontalChoices(c, v+Column, true, &choices)
 	}
 	return choices
 }
 
-func dice(choices []float64) float64 {
-	return choices[rand.Intn(len(choices))]
+func dice(choices [Length]int) int {
+	var r []int
+	for i, c := range choices {
+		if c < 1 {
+			continue
+		}
+		r = append(r, i)
+	}
+	return r[rand.Intn(len(r))]
 }
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	next := float64(rand.Intn(9))
-	var result = []float64{next + 1}
+	next := rand.Intn(Length)
+	var result = []int{next + 1}
 	for i := 0; i < 5; i++ {
 		c := choices(next)
 		next = dice(c)
