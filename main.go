@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -48,14 +50,18 @@ func dice(choices [Length]int) int {
 	return r[rand.Intn(len(r))]
 }
 
+func format(choices []string) string {
+	return strings.Join(choices, " → ")
+}
+
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	next := rand.Intn(Length)
-	var result = []int{next + 1}
+	var result = []string{strconv.Itoa(next + 1)}
 	for i := 0; i < 5; i++ {
 		c := choices(next)
 		next = dice(c)
-		result = append(result, next+1)
+		result = append(result, strconv.Itoa(next+1))
 	}
-	fmt.Printf("%v\n", result)
+	fmt.Println(format(result))
 }
