@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"math/rand"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -55,10 +57,19 @@ func format(choices []string) string {
 }
 
 func main() {
+	args := os.Args
+	if len(args) < 2 {
+		log.Fatalln("Length is required.")
+	}
+	l, err := strconv.Atoi(args[1])
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	rand.Seed(time.Now().UnixNano())
 	next := rand.Intn(Length)
 	var result = []string{strconv.Itoa(next + 1)}
-	for i := 0; i < 5; i++ {
+	for i := 1; i < l; i++ {
 		c := choices(next)
 		next = dice(c)
 		result = append(result, strconv.Itoa(next+1))
